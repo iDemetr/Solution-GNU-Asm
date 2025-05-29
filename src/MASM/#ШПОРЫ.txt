@@ -1,0 +1,33 @@
+Сборка asm:
+ml64 /c lr4_4.asm
+
+/c — только компиляция, без линковки.
+/Fo — имя выходного объектного файла.
+
+Линковка:
+link.exe /SUBSYSTEM:CONSOLE /ENTRY:main n.obj /OUT:n.exe
+
+/subsystem:console — консольное приложение.
+/defaultlib:msvcrt.lib — стандартная библиотека C (для printf , scanf ).
+/out: — имя итогового exe.
+
+Если ошибка неразрешённый внешний символ:
+/defaultlib:ucrt.lib
+/defaultlib:msvcrt.lib
+
+Добавьте путь к библиотекам явно (путь может отличаться в вашей системе):
+/libpath:"C:\Program Files (x86)\Windows Kits\10\Lib\<версия>\ucrt\x64" /defaultlib:ucrt.lib 
+
+
+1. Проверьте, что вы используете именно 64-битные инструменты и библиотеки
+Запускайте сборку и линковку в Developer Command Prompt for VS x64 (там настроены пути к 64-битным библиотекам).
+Убедитесь, что ml64.exe и link.exe берутся из папок с x64 библиотеками.
+2. Убедитесь, что в вашем asm-файле:
+Объявлены public main , extern scanf:proc и extern printf:proc .
+Добавлена директива includelib msvcrt.lib (или ucrt.lib , если используете Universal CRT).
+Точка входа — main , а не _main или mainCRTStartup .
+
+
+Однажды сработало:
+link.exe /SUBSYSTEM:CONSOLE /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.20348.0\ucrt\x64" 
+/DEFAULTLIB:ucrt.lib /ENTRY:main test.obj /OUT:test.exe
